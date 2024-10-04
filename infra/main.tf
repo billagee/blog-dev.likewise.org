@@ -11,6 +11,7 @@
 locals {
   s3_bucket_name     = "blog-dev.likewise.org"
   domain             = "blog-dev.likewise.org"
+  domain_for_prod    = "blog.likewise.org"
   route53_zone_name  = "likewise.org."
 }
 
@@ -25,6 +26,11 @@ data "aws_route53_zone" "main" {
 
 data "aws_acm_certificate" "main" {
   domain   = local.domain
+  statuses = ["ISSUED"]
+}
+
+data "aws_acm_certificate" "cert_for_prod" {
+  domain   = local.domain_for_prod
   statuses = ["ISSUED"]
 }
 
@@ -52,7 +58,7 @@ resource "aws_s3_bucket_policy" "main" {
 
 resource aws_cloudfront_distribution "main" {
   enabled = true
-  aliases = [local.domain]
+  aliases = [local.domain, local.domain_for_prod]
   default_root_object = "index.html"
   is_ipv6_enabled     = true
   wait_for_deployment = true
@@ -74,6 +80,10 @@ resource aws_cloudfront_distribution "main" {
       }
     }
     */
+    function_association {
+      event_type = "viewer-request"  # Attach the function at the viewer-request stage
+      function_arn = aws_cloudfront_function.main.arn
+    }
   }
 
   origin {
@@ -91,7 +101,7 @@ resource aws_cloudfront_distribution "main" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.main.arn
+    acm_certificate_arn = data.aws_acm_certificate.cert_for_prod.arn
     minimum_protocol_version = "TLSv1.2_2021"
     ssl_support_method = "sni-only"
   }
@@ -118,13 +128,40 @@ data "aws_iam_policy_document" "cloudfront_oac_access" {
       "s3:GetObject",
     ]
     resources = ["${aws_s3_bucket.main.arn}/*"]
-    
+
     condition {
       test = "StringEquals"
       values = [aws_cloudfront_distribution.main.arn]
       variable = "AWS:SourceArn"
     }
   }
+}
+
+# Cloudfront function to make sure URLs ending in / are redirected to /index.html
+# See https://stackoverflow.com/a/76581267/267263
+resource "aws_cloudfront_function" "main" {
+  name    = "my-cloudfront-function"
+  runtime = "cloudfront-js-1.0"
+
+  code = <<EOF
+function handler(event) {
+    var request = event.request;
+    var uri = request.uri;
+
+    // Check whether the URI is missing a file name.
+    if (uri.endsWith('/')) {
+        request.uri += 'index.html';
+    } 
+    // Check whether the URI is missing a file extension.
+    else if (!uri.includes('.')) {
+        request.uri += '/index.html';
+    }
+
+    return request;
+}
+EOF
+
+  comment = "Function to append index.html to missing URIs"
 }
 
 #### ROUTE53 CONFIGURATION
@@ -139,3 +176,16 @@ resource "aws_route53_record" "main" {
     evaluate_target_health = true
   }
 }
+
+resource "aws_route53_record" "production-fqdn" {
+  name    = local.domain_for_prod
+  type    = "A"
+  zone_id = data.aws_route53_zone.main.zone_id
+
+  alias {
+    name                   = aws_cloudfront_distribution.main.domain_name
+    zone_id                = aws_cloudfront_distribution.main.hosted_zone_id
+    evaluate_target_health = true
+  }
+}
+
