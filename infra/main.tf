@@ -71,15 +71,6 @@ resource aws_cloudfront_distribution "main" {
     target_origin_id = aws_s3_bucket.main.bucket
     viewer_protocol_policy = "redirect-to-https"
 
-    /*
-    forwarded_values {
-      query_string = false
-    
-      cookies {
-        forward = "none"
-      }
-    }
-    */
     function_association {
       event_type = "viewer-request"  # Attach the function at the viewer-request stage
       function_arn = aws_cloudfront_function.main.arn

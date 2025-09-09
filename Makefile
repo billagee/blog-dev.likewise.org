@@ -73,8 +73,8 @@ publish:
 
 s3_upload: publish
 #	aws s3 sync "$(OUTPUTDIR)"/ s3://$(S3_BUCKET) --acl public-read --delete
-	aws s3 sync "$(OUTPUTDIR)"/ s3://$(S3_BUCKET)
-	AWS_PAGER="" aws cloudfront create-invalidation --distribution-id=E17BOLBVFN0PR3 --paths /
+	aws s3 sync "$(OUTPUTDIR)"/ s3://$(S3_BUCKET) --delete
+	AWS_PAGER="" aws cloudfront create-invalidation --distribution-id=E17BOLBVFN0PR3 --paths '/*'
 
 
 .PHONY: html help clean regenerate serve serve-global devserver devserver-global publish s3_upload
