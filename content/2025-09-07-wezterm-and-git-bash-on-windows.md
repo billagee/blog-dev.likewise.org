@@ -47,7 +47,7 @@ local config = wezterm.config_builder()
 config.initial_cols = 128
 config.initial_rows = 28
 config.font_size = 11
-config.color_scheme = 'BatMan'
+config.color_scheme = 'Material Darker (base16)'
 
 -- bash configuration
 config.default_prog = { "C:\\Program Files\\Git\\bin\\bash.exe", "--login", "-i" }
@@ -56,13 +56,13 @@ config.default_prog = { "C:\\Program Files\\Git\\bin\\bash.exe", "--login", "-i"
 return config
 ```
 
-Save your changes and launch WizTerm. Note that if you already have WezTerm open, it hot-reloads the file, so you can see your tweak results without closing it!
+Save your changes and launch WezTerm. Note that if you already have WezTerm open, it hot-reloads the file, so you can see your tweak results without closing it!
 
 ## Customize
 
 See details on other features and customizing the appearance of WezTerm over at [https://wezterm.org/config/appearance.html](https://wezterm.org/config/appearance.html).
 
-I particularly love that WizTerm ships with every color scheme I've used in the past with iTerm2, Windows Terminal, and other terminal apps. There's no need to locate and set up the themes separately. Amazing.
+I particularly love that WezTerm ships with every color scheme I've used in the past with iTerm2, Windows Terminal, and other terminal apps. There's no need to locate and set up the themes separately. Amazing.
 
 See the full list of themes at: [https://wezterm.org/colorschemes/index.html](https://wezterm.org/colorschemes/index.html)
 
