@@ -31,7 +31,8 @@ pelican-quickstart
 
 Add to pelicanconf.py:
 
-THEME="/Users/billagee/github/duilio/pelican-octopress-theme"
+import os
+THEME="{}/github/duilio/pelican-octopress-theme".format(os.environ.get("HOME"))
 ```
 
 Launch the local dev server with:

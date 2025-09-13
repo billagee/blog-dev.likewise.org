@@ -1,9 +1,11 @@
+import os
+
 AUTHOR = 'Bill Agee'
 SITENAME = "Bill Agee's blog"
 SITESUBTITLE = "🏗️ Reflections on test infrastructure, with a twist of user empathy.🤝"
 SITEURL = ""
 
-THEME="/Users/billagee/github/duilio/pelican-octopress-theme"
+THEME="{}/github/duilio/pelican-octopress-theme".format(os.environ.get("HOME"))
 
 PATH = "content"
 
