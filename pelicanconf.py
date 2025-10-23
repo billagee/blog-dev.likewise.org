@@ -4,8 +4,10 @@ AUTHOR = 'Bill Agee'
 SITENAME = "Bill Agee's blog"
 SITESUBTITLE = "🏗️ Reflections on test infrastructure, with a twist of user empathy.🤝"
 SITEURL = ""
+STATIC_PATHS = [ 'static' ]
 
-THEME="{}/github/duilio/pelican-octopress-theme".format(os.environ.get("HOME"))
+#THEME="{}/github/duilio/pelican-octopress-theme".format(os.environ.get("HOME"))
+THEME="{}/github/billagee/pelican-octopress-theme".format(os.environ.get("HOME"))
 
 PATH = "content"
 
